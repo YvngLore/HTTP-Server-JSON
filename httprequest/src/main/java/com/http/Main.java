@@ -29,30 +29,39 @@ public class Main {
 
     public static void sendResponse(PrintWriter out, BufferedReader in){
         try {
-            File file = new File("index.html");
+            String str = in.readLine();
+            System.out.println(str);
+            String file_path = "."+str.split(" ")[1];
+            File file = new File(file_path);
             Scanner reader = new Scanner(file);
-            String str = "";
                 do{
                     str = in.readLine();
                     System.out.println(str);
                 }while(!str.equals("") || !str.isEmpty());
+
+                System.out.println(str);
                 String data = "";
 
                 while(reader.hasNextLine()){
                     data += reader.nextLine();
+    
                 }
                 reader.close();
+
                 out.println("HTTP/1.1 200 OK");
                 out.println("Content-Length: " + data.length());
                 out.println("Server: Java HTTP Server from Benve: 1.0");
                 out.println("Date: " + new Date());
                 out.println("Content-Type: text/html; charset-utf:8");
+
                 out.println();
-                
+
                 out.println(data);
                 out.flush();
+
         } catch (Exception e) {
-            // TODO: handle exception
+            out.println("HTTP/1.1 404 OK");
+            System.out.println(e.getMessage());
         }
     }
 }
