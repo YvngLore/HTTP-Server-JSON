@@ -27,11 +27,22 @@ public class Main {
         }
     }
 
+    public static String getPath(String str){
+
+        String file_path = str.split(" ")[1];
+        String result = "./httprequest/site";
+        file_path = file_path.equals("/") ? "/index.html" : file_path;
+
+        return result + file_path;
+    }
+
     public static void sendResponse(PrintWriter out, BufferedReader in){
         try {
             String str = in.readLine();
             System.out.println(str);
-            String file_path = "."+str.split(" ")[1];
+            String file_path = getPath(str);
+            System.out.println("Path: \"" + file_path + "\"\n");
+            
             File file = new File(file_path);
             Scanner reader = new Scanner(file);
                 do{
@@ -44,7 +55,6 @@ public class Main {
 
                 while(reader.hasNextLine()){
                     data += reader.nextLine();
-    
                 }
                 reader.close();
 
@@ -61,6 +71,7 @@ public class Main {
 
         } catch (Exception e) {
             out.println("HTTP/1.1 404 OK");
+            out.println();
             System.out.println(e.getMessage());
         }
     }
