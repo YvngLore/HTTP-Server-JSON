@@ -11,6 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 import java.util.Scanner;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
     public static void main(String[] args) {
@@ -35,7 +36,11 @@ public class Main {
 
         String file_path = str.split(" ")[1];
         String result = "./httprequest/site";
-        file_path = file_path.equals("/") ? "/index.html" : file_path;
+        switch(str){
+            case "/":
+                file_path = "/index.html";
+                break;
+        }
 
         return result + file_path;
     }
@@ -70,6 +75,9 @@ public class Main {
             case ("jpeg"):
                 result = "image/jpeg";
                 break;
+            case ("json"):
+                result = "application/json";
+                break;
             default:
                 result = "text/html";
                 break;
@@ -103,50 +111,65 @@ public class Main {
             System.out.println(str);
             String file_path = getPath(str);
             String type = getTypeFromPath(file_path);
-            System.out.println("Path: \"" + file_path + "\"\n");
-            
-            File file = new File(file_path);
-            long datalength = 0;
-            String data = "";
-            if(type.startsWith("text")){
-                Scanner reader = new Scanner(file);
-                do{
-                    str = in.readLine();
-                    System.out.println(str);
-                }while(!str.equals("") || !str.isEmpty());
 
-                System.out.println(str);
+            if(type.endsWith("json")){
+                Studente s = new Studente("Rayan", "Moh'd", "ccff1", 18, "5Dia");
+                ObjectMapper json = new ObjectMapper();
 
-                while(reader.hasNextLine()){
-                    data += reader.nextLine();
-                }
-                datalength = data.length();
-                reader.close();
-            }
-            else{
-                datalength = file.length() ;
-            }
-
-            System.out.println("RESPONSE: \n");
-            out.println("HTTP/1.1 200 OK");
-            System.out.println("HTTP/1.1 200 OK");
-            out.println("Content-Length: " + datalength);
-            System.out.println("Content-Length: " + datalength);
-            out.println("Server: Java HTTP Server from Benve: 1.0");
-            System.out.println("Server: Java HTTP Server from Benve: 1.0");
-            out.println("Date: " + new Date());
-            System.out.println("Date: " + new Date());
-            out.println("Content-Type: " + type );
-            System.out.println("Content-Type: " + type );
-            System.out.println();
-            out.println();
-
-            if(type.startsWith("text")){
-                out.println(data);
+                String result = json.writeValueAsString(s);
+                out.println("HTTP/1.1 200 OK");
+                out.println("Content-Length: " + result.length());
+                out.println("Server: Java HTTP Server from YvngLore: 1.0");
+                out.println("Date: " + new Date());
+                out.println("Content-Type: " + type);
+                out.println();
+                out.println(result);
                 out.flush();
             }
             else{
-                sendBinaryFile(outbytes, file);
+                File file = new File(file_path);
+                long datalength = 0;
+                String data = "";
+                if(type.startsWith("text")){
+                    Scanner reader = new Scanner(file);
+                    do{
+                        str = in.readLine();
+                        System.out.println(str);
+                    }while(!str.equals("") || !str.isEmpty());
+
+                    System.out.println(str);
+
+                    while(reader.hasNextLine()){
+                        data += reader.nextLine();
+                    }
+                    datalength = data.length();
+                    reader.close();
+                }
+                else{
+                    datalength = file.length() ;
+                }
+
+                System.out.println("RESPONSE: \n");
+                out.println("HTTP/1.1 200 OK");
+                System.out.println("HTTP/1.1 200 OK");
+                out.println("Content-Length: " + datalength);
+                System.out.println("Content-Length: " + datalength);
+                out.println("Server: Java HTTP Server from Benve: 1.0");
+                System.out.println("Server: Java HTTP Server from Benve: 1.0");
+                out.println("Date: " + new Date());
+                System.out.println("Date: " + new Date());
+                out.println("Content-Type: " + type );
+                System.out.println("Content-Type: " + type );
+                System.out.println();
+                out.println();
+
+                if(type.startsWith("text")){
+                    out.println(data);
+                    out.flush();
+                }
+                else{
+                    sendBinaryFile(outbytes, file);
+                }
             }
 
         } catch (Exception e) {
